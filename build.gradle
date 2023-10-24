@@ -39,7 +39,7 @@ dependencies {
 	runtimeOnly "org.lwjgl:lwjgl-openal::$lwjglNatives"
 	//runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
 	
-	implementation 'github.koossa:niftygui-core:1.0.0'
+	implementation "github.koossa:niftygui-core:$coreVersion" 
 	
 	implementation group: 'com.projectdarkstar.ext.jorbis', name: 'jorbis', version: '0.0.17'
 	implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
