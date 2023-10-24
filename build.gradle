@@ -1,38 +1,81 @@
 plugins {
-	id 'java'
 	id 'java-library'
+	id 'maven-publish'
 }
+
+group 'github.koossa'
+version mavenPubVersion
+
+sourceCompatibility = '1.8'
 
 project.ext {
 	lwjglVersion = "3.3.3"
-	jomlVersion = "1.10.5"
 	lwjglNatives = "natives-windows"
 }
 
 repositories {
 	mavenCentral()
 	maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-	maven { url 'https://jitpack.io' }
+	maven { 
+	    	url = uri("https://maven.pkg.github.com/KoosSA/MavenRepos") 
+	    	credentials {
+            	username = project.findProperty("gpr.user") ?: System.getenv("GIT_USERNAME")
+            	password = project.findProperty("gpr.key") ?: System.getenv("GIT_TOKEN")
+        	}
+	    }
 }
 
 dependencies {
 	implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
 
-	implementation "org.lwjgl:lwjgl"
-	implementation "org.lwjgl:lwjgl-glfw"
+	//implementation "org.lwjgl:lwjgl"
+	//implementation "org.lwjgl:lwjgl-glfw"
 	implementation "org.lwjgl:lwjgl-openal"
-	implementation "org.lwjgl:lwjgl-opengl"
-	implementation "org.lwjgl:lwjgl-stb"
+	//implementation "org.lwjgl:lwjgl-opengl"
+	//implementation "org.lwjgl:lwjgl-stb"
 	
-	runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
-	runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"
+	//runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
+	//runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"
 	runtimeOnly "org.lwjgl:lwjgl-openal::$lwjglNatives"
-	runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
+	//runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
 	
-	implementation 'com.github.KoosSA:NiftyGui-core:master-SNAPSHOT'
+	implementation 'github.koossa:niftygui-core:1.0.0'
 	
 	implementation group: 'com.projectdarkstar.ext.jorbis', name: 'jorbis', version: '0.0.17'
 	implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
+}
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/KoosSA/MavenRepos")
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("GIT_USERNAME")
+                password = project.findProperty("gpr.key") ?: System.getenv("GIT_TOKEN")
+            }
+        }
+    }
+    publications {
+        gpr(MavenPublication) {
+        	artifactId = 'niftygui-soundsystem'
+            from(components.java)
+        }
+    }
+}
+
+if (JavaVersion.current().isJava8Compatible()) {
+    allprojects {
+      tasks.withType(Javadoc) {
+        options.addStringOption('Xdoclint:none', '-quiet')
+      }
+    }
 }
 
 
